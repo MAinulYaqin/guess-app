@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Guess</string>
+    <string name="question_text">This is game fragment</string>
+    <string name="skip">skip</string>
+    <string name="next">next</string>
+    <string name="play">play</string>
+    <string name="title_text">title fragment</string>
+    <string name="back_to_home">back to home</string>
+    <string name="score_text">You\'ve guessed %1$d out of 3</string>
+    <string name="current_score_text">Score: %1$d/3</string>
+    <string name="you_win">You Win</string>
+</resources>
