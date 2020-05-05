@@ -6,23 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.gabutproject.guess.R
 import com.gabutproject.guess.databinding.GameFragmentBinding
 
-// TODO: make viewModel for this activity
-
 class GameFragment : Fragment() {
 
-    // current word to show
-    private var word: String? = ""
-
-    // current score to show
-    private var score = 0
-
-    // the list of words - the front of the list is the next word to guess
-    private lateinit var wordList: MutableList<String>
-
+    private val viewModel: GameViewModel by viewModels()
     private lateinit var binding: GameFragmentBinding
 
     override fun onCreateView(
@@ -32,68 +24,44 @@ class GameFragment : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.game_fragment, container, false)
 
-        resetList() // shuffle the words
-        nextWord() // set the word to guess
+        // data initialization
+        viewModel
 
-        binding.nextButton.setOnClickListener { onNext() }
-        binding.skipButton.setOnClickListener { onSkip() }
+        binding.nextButton.setOnClickListener {
+            viewModel.onNext()
+        }
+        binding.skipButton.setOnClickListener {
+            viewModel.onSkip()
+        }
 
-        // once initialization to show the word & score
-        updateWord()
-        updateScore()
+        updateLiveData()
 
         return binding.root
     }
 
-    /** Methods for logic **/
-    private fun resetList() {
-        wordList = mutableListOf(
-            "ayam",
-            "ikan",
-            "kambing",
-            "anjing",
-            "kucing"
-        )
-
-        wordList.shuffle()
-    }
-
-    private fun nextWord() {
-        if (wordList.isEmpty()) {
-            // wordList is empty, the game finished
-            gameFinished()
-        } else {
-            // pop the list till empty
-            word = wordList.removeAt(0)
-        }
-        updateWord()
-        updateScore()
-    }
-
     private fun gameFinished() {
-        val action = R.id.action_gameFragment_to_scoreFragment
-        // TODO: pass safeArgs to score
+        val score: Int = viewModel.score.value!!
+        val action = GameFragmentDirections.actionGameFragmentToScoreFragment(score)
         findNavController().navigate(action)
     }
 
-    /** Methods for buttons presses **/
-    private fun onNext() {
-        score++
-        nextWord()
-    }
-
-    private fun onSkip() {
-        score--
-        nextWord()
-    }
-
     /** Methods updating the UI **/
-    private fun updateWord() {
+    private fun updateLiveData() {
+        viewModel.score.observe(viewLifecycleOwner, Observer {
+            updateScore(it)
+        })
+
+        viewModel.word.observe(viewLifecycleOwner, Observer {
+            updateWord(it)
+        })
+    }
+
+    private fun updateWord(word: String) {
         // bind text to show the current word
         binding.questionText.text = word
     }
 
-    private fun updateScore() {
+    private fun updateScore(score: Int) {
         // bind text to show the current score
         binding.currentScoreText.text = getString(R.string.current_score_text, score)
     }

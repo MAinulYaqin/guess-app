@@ -40,10 +40,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/medium_margin"
+            android:backgroundTint="@android:color/holo_red_light"
             android:text="@string/skip"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            android:background="@android:color/holo_red_light"/>
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/next_button"
