@@ -45,7 +45,7 @@ class GameFragment : Fragment() {
         findNavController().navigate(action)
     }
 
-    /** Methods updating the UI **/
+    /** Methods updating the data **/
     private fun updateLiveData() {
         viewModel.score.observe(viewLifecycleOwner, Observer {
             updateScore(it)
@@ -54,8 +54,17 @@ class GameFragment : Fragment() {
         viewModel.word.observe(viewLifecycleOwner, Observer {
             updateWord(it)
         })
+
+        viewModel.onGameFinished.observe(viewLifecycleOwner, Observer {gameFinished ->
+            if (gameFinished) {
+                gameFinished() // make directions to another fragment
+                // set data to false to prevent re-called observer
+                viewModel.onGameFinishedComplete()
+            }
+        })
     }
 
+    /** Methods for button presses **/
     private fun updateWord(word: String) {
         // bind text to show the current word
         binding.questionText.text = word
