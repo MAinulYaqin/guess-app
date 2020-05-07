@@ -1,6 +1,7 @@
 package com.gabutproject.guess.screens.game
 
 import android.os.Bundle
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -55,7 +56,11 @@ class GameFragment : Fragment() {
             updateWord(it)
         })
 
-        viewModel.onGameFinished.observe(viewLifecycleOwner, Observer {gameFinished ->
+        viewModel.currentTime.observe(viewLifecycleOwner, Observer {
+            updateTimer(it)
+        })
+
+        viewModel.onGameFinished.observe(viewLifecycleOwner, Observer { gameFinished ->
             if (gameFinished) {
                 gameFinished() // make directions to another fragment
                 // set data to false to prevent re-called observer
@@ -73,5 +78,9 @@ class GameFragment : Fragment() {
     private fun updateScore(score: Int) {
         // bind text to show the current score
         binding.currentScoreText.text = getString(R.string.current_score_text, score)
+    }
+
+    private fun updateTimer(timer: Long) {
+        binding.timerText.text = DateUtils.formatElapsedTime(timer)
     }
 }
