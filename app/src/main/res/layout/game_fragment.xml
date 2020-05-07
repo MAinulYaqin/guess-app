@@ -8,6 +8,17 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/timer_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:textSize="@dimen/medium_text_size"
+            app:layout_constraintBottom_toTopOf="@id/current_score_text"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1"
+            tools:text="01:15" />
+
+        <TextView
             android:id="@+id/current_score_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
