@@ -10,13 +10,16 @@ class GameViewModel : ViewModel() {
 
     companion object {
         // these are values for timer countdown
-        private const val DONE = 0L // use for tick countDown
-        private const val ONE_SECOND = 1000L // 1 second
-        private const val TOTAL_TIME = 60000L // 1 minute
+        // zero millisecond; actually use for reset value when timer is complete
+        private const val DONE = 0L
+        private const val ONE_SECOND = 1000L // 1 second in millisecond
+        private const val TOTAL_TIME = 60000L // 1 minute in millisecond
     }
 
-    private var timer: CountDownTimer
+    // timer Countdown
+    private lateinit var timer: CountDownTimer
 
+    // current time to show
     private val _currentTime = MutableLiveData<Long>()
     val currentTime: LiveData<Long> get() = _currentTime
 
@@ -36,7 +39,6 @@ class GameViewModel : ViewModel() {
     private lateinit var wordList: MutableList<String>
 
     init {
-
         Log.i("GameFragment", "game view model created")
 
         _word.value = ""
@@ -46,19 +48,7 @@ class GameViewModel : ViewModel() {
         resetList() // shuffle the words
         nextWord() // set the word to guess
 
-        timer = object : CountDownTimer(TOTAL_TIME, ONE_SECOND) {
-            override fun onFinish() {
-                // wordList is empty / score = 3, the game finished
-                _onGameFinished.value = true
-                _currentTime.value = DONE
-            }
-
-            override fun onTick(millisUntilFinished: Long) {
-                _currentTime.value = (millisUntilFinished / ONE_SECOND)
-            }
-        }
-
-        timer.start()
+        startTimer() // start the timer
     }
 
     /** Methods for logic **/
@@ -83,6 +73,26 @@ class GameViewModel : ViewModel() {
         _word.value = wordList.removeAt(0)
     }
 
+    private fun startTimer() {
+        // set the timer to end after reached 1 minute
+        // set to ticked in interval of 1 second
+        timer = object : CountDownTimer(TOTAL_TIME, ONE_SECOND) {
+            override fun onFinish() {
+                _onGameFinished.value = true
+                _currentTime.value = DONE // reset value to zero,
+            }
+
+            override fun onTick(millisUntilFinished: Long) {
+                Log.i("GameViewModel", millisUntilFinished.toString())
+                Log.i("GameViewModel", (millisUntilFinished / ONE_SECOND).toString())
+                _currentTime.value = (millisUntilFinished / ONE_SECOND)
+            }
+        }
+
+        // start the timer
+        timer.start()
+    }
+
     /** Methods for buttons presses **/
     fun onNext() {
         _score.value = _score.value?.plus(1)
@@ -94,6 +104,7 @@ class GameViewModel : ViewModel() {
         nextWord()
     }
 
+    /** Methods to update the current state **/
     fun onGameFinishedComplete() {
         _onGameFinished.value = false
     }
