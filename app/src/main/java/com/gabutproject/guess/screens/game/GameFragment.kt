@@ -48,28 +48,30 @@ class GameFragment : Fragment() {
 
     /** Methods updating the data **/
     private fun updateLiveData() {
-        viewModel.score.observe(viewLifecycleOwner, Observer {
-            updateScore(it)
+        viewModel.score.observe(viewLifecycleOwner, Observer { currentScore ->
+            updateScore(currentScore)
         })
 
-        viewModel.word.observe(viewLifecycleOwner, Observer {
-            updateWord(it)
+        viewModel.word.observe(viewLifecycleOwner, Observer { currentWord ->
+            updateWord(currentWord)
         })
 
-        viewModel.currentTime.observe(viewLifecycleOwner, Observer {
-            updateTimer(it)
+        viewModel.currentTime.observe(viewLifecycleOwner, Observer { currentTime ->
+            updateTimer(currentTime)
         })
 
-        viewModel.onGameFinished.observe(viewLifecycleOwner, Observer { gameFinished ->
-            if (gameFinished) {
-                gameFinished() // make directions to another fragment
-                // set data to false to prevent re-called observer
+        viewModel.onGameFinished.observe(viewLifecycleOwner, Observer { onGameFinished ->
+            if (onGameFinished) {
+                // make directions to another fragment
+                gameFinished()
+                // and called gameFinishedComplete() to change the current state's
+                // value to false to prevent re-called observer
                 viewModel.onGameFinishedComplete()
             }
         })
     }
 
-    /** Methods for button presses **/
+    /** Methods to update UI; current state **/
     private fun updateWord(word: String) {
         // bind text to show the current word
         binding.questionText.text = word
@@ -81,6 +83,7 @@ class GameFragment : Fragment() {
     }
 
     private fun updateTimer(timer: Long) {
+        // use dateUtils here, to reduce code
         binding.timerText.text = DateUtils.formatElapsedTime(timer)
     }
 }
