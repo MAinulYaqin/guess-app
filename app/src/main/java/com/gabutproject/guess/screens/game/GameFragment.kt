@@ -28,12 +28,13 @@ class GameFragment : Fragment() {
         // data initialization
         viewModel
 
-        binding.nextButton.setOnClickListener {
-            viewModel.onNext()
-        }
-        binding.skipButton.setOnClickListener {
-            viewModel.onSkip()
-        }
+        // Set viewModel for dataBinding - this allows the bound layout access
+        // to all data in the viewModel, so no need to set data here anymore.
+        binding.gameViewModel = viewModel
+
+        // to make the LiveData work
+        // set lifecycleOwner to currentActivity (the UI controller)
+        binding.lifecycleOwner = viewLifecycleOwner
 
         updateLiveData()
 
@@ -48,18 +49,6 @@ class GameFragment : Fragment() {
 
     /** Methods updating the data **/
     private fun updateLiveData() {
-        viewModel.score.observe(viewLifecycleOwner, Observer { currentScore ->
-            updateScore(currentScore)
-        })
-
-        viewModel.word.observe(viewLifecycleOwner, Observer { currentWord ->
-            updateWord(currentWord)
-        })
-
-        viewModel.currentTime.observe(viewLifecycleOwner, Observer { currentTime ->
-            updateTimer(currentTime)
-        })
-
         viewModel.onGameFinished.observe(viewLifecycleOwner, Observer { onGameFinished ->
             if (onGameFinished) {
                 // make directions to another fragment
@@ -69,21 +58,5 @@ class GameFragment : Fragment() {
                 viewModel.onGameFinishedComplete()
             }
         })
-    }
-
-    /** Methods to update UI; current state **/
-    private fun updateWord(word: String) {
-        // bind text to show the current word
-        binding.questionText.text = word
-    }
-
-    private fun updateScore(score: Int) {
-        // bind text to show the current score
-        binding.currentScoreText.text = getString(R.string.current_score_text, score)
-    }
-
-    private fun updateTimer(timer: Long) {
-        // use dateUtils here, to reduce code
-        binding.timerText.text = DateUtils.formatElapsedTime(timer)
     }
 }

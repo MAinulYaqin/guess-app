@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.gabutproject.guess.R
@@ -33,17 +34,26 @@ class ScoreFragment : Fragment() {
         // get the data from modalProvider then init the viewModel
         viewModel = ViewModelProvider(this, viewModelFactory).get(ScoreViewModel::class.java)
 
-        // viewModel.status contains status of the user, whether they win or lose
-        // returns string resource with the value of the following status
-        binding.statusText.text = getString(viewModel.status)
+        binding.viewModel = viewModel
+        binding.lifecycleOwner = viewLifecycleOwner
 
-        binding.summarizeText.text = getString(R.string.final_score_text, viewModel.score)
 
-        binding.backButton.setOnClickListener {
-            val action = ScoreFragmentDirections.actionScoreFragmentToTitleFragment()
-            findNavController().navigate(action)
-        }
+        gameFinished()
 
         return binding.root
     }
+
+    private fun gameFinished() {
+        viewModel.backHome.observe(viewLifecycleOwner, Observer { onGameFinished ->
+            if (onGameFinished) {
+                // make directions to another fragment
+                val action = ScoreFragmentDirections.actionScoreFragmentToTitleFragment()
+                findNavController().navigate(action)
+
+                // set the value to false again,
+                viewModel.onBackHomeComplete()
+            }
+        })
+    }
+
 }

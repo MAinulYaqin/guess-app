@@ -1,9 +1,11 @@
 package com.gabutproject.guess.screens.game
 
 import android.os.CountDownTimer
+import android.text.format.DateUtils
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 
 class GameViewModel : ViewModel() {
@@ -13,7 +15,7 @@ class GameViewModel : ViewModel() {
         // zero millisecond; actually use for reset value when timer is complete
         private const val DONE = 0L
         private const val ONE_SECOND = 1000L // 1 second in millisecond
-        private const val TOTAL_TIME = 60000L // 1 minute in millisecond
+        private const val TOTAL_TIME = 5000L // 1 minute in millisecond
     }
 
     // timer Countdown
@@ -22,6 +24,11 @@ class GameViewModel : ViewModel() {
     // current time to show
     private val _currentTime = MutableLiveData<Long>()
     val currentTime: LiveData<Long> get() = _currentTime
+
+    // current time<String> to show
+    val currentTimeString = Transformations.map(currentTime) { time ->
+        DateUtils.formatElapsedTime(time)
+    }
 
     // current word to show
     private val _word = MutableLiveData<String>()
