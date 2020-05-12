@@ -15,7 +15,7 @@ class GameViewModel : ViewModel() {
         // zero millisecond; actually use for reset value when timer is complete
         private const val DONE = 0L
         private const val ONE_SECOND = 1000L // 1 second in millisecond
-        private const val TOTAL_TIME = 5000L // 1 minute in millisecond
+        private const val TOTAL_TIME = 6000L // 1 minute in millisecond
     }
 
     // timer Countdown
